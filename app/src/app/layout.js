@@ -15,6 +15,13 @@ const fallbackSite = {
   description: "",
 };
 
+const shareImage = {
+  url: "/assets/images/share.jpeg",
+  width: 1200,
+  height: 706,
+  alt: fallbackSite.title,
+};
+
 const buildSanityImageUrl = (baseUrl, width, height = width) => {
   if (!baseUrl) return null;
   const separator = baseUrl.includes("?") ? "&" : "?";
@@ -34,6 +41,7 @@ export async function generateMetadata() {
   const resolvedTitle = site?.title || fallbackSite.title;
   const resolvedDescription = site?.description || fallbackSite.description;
   const resolvedOwner = site?.owner || undefined;
+  const resolvedShareImage = { ...shareImage, alt: resolvedTitle };
 
   const faviconBaseUrl = site?.favicon?.asset?.url;
   const sanityIcons = faviconBaseUrl
@@ -67,11 +75,13 @@ export async function generateMetadata() {
       title: resolvedTitle,
       description: resolvedDescription,
       type: "website",
+      images: [resolvedShareImage],
     },
     twitter: {
       card: "summary_large_image",
       title: resolvedTitle,
       description: resolvedDescription,
+      images: [resolvedShareImage.url],
     },
   };
 }

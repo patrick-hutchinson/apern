@@ -61,6 +61,7 @@
   width: 100vw;
 
   padding: var(--margin-page);
+  padding-top: calc(var(--margin-page) - 2px);
 
   display: flex;
   justify-content: space-between;
@@ -93,7 +94,7 @@
 .headerVideo {
   position: absolute;
   inset: 0;
-  width: 100%;
+  width: auto;
   height: 100%;
   object-fit: cover;
   cursor: pointer;

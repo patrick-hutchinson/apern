@@ -15,13 +15,12 @@ const SECTION_MODELS = [
 ];
 
 const AboutPage = ({ page, landingPage }) => {
-  if (!page || page.length === 0) return null;
-
   const [isClosing, setIsClosing] = useState(false);
   const navigate = useAnimatedNavigation();
   const sections = landingPage?.sections ?? [];
   const defaultThumbnail = SECTION_MODELS[0].thumbnailPath;
   const defaultSection = sections[0];
+  const credits = page?.credits;
 
   const handleThumbnailClick = () => {
     if (!defaultSection) {
@@ -65,9 +64,11 @@ const AboutPage = ({ page, landingPage }) => {
         animate={{ opacity: isClosing ? 0 : 1 }}
         transition={{ duration: 2, ease: "easeOut" }}
       >
-        <div>
-          <Text text={page.credits} typo="h3" />
-        </div>
+        {credits ? (
+          <div>
+            <Text text={credits} typo="h3" />
+          </div>
+        ) : null}
       </motion.div>
 
       <motion.div

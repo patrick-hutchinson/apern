@@ -3,7 +3,7 @@
   --foreground: #ffffff;
   --accent: #444;
 
-  --margin-page: 36px;
+  --margin-page: 28px;
 
   --content-height: calc(100vh - var(--header-height));
 
@@ -29,6 +29,8 @@ html {
   overscroll-behavior: none;
   overflow-anchor: none;
   overflow: hidden;
+
+  font-family: "TN7R";
 }
 
 body {
@@ -94,7 +96,7 @@ li {
 /* iPads and other Tablets */
 @media screen and (min-width: 769px) {
   :root {
-    --margin-page: 60px;
+    --margin-page: 50px;
   }
 }
 

@@ -275,12 +275,12 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
         text={activeSection?.sectionKey}
         typo="h2"
       />
-      {/* <div className={styles.rotationDebug}>
+      <div className={styles.rotationDebug}>
         <span ref={rotationDebugRef} className={styles.rotationDebugText} />
         <button type="button" className={styles.rotationDebugCopy} onClick={handleCopyDebug}>
           {copied ? "Copied" : "Copy"}
         </button>
-      </div> */}
+      </div>
       <div ref={mountRef} className={styles.canvas} />
     </motion.div>
   );

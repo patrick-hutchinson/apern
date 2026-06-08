@@ -1,12 +1,20 @@
+@font-face {
+  font-family: "TN7R";
+  src: url("/fonts/TimesNewRomanSevenRegular.woff2") format("woff2");
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --font-size-2: 2.2rem;
-  --line-height-2: 2.25rem;
-  --letter-spacing-2: 0.12rem;
+  --font-size-2: 2rem;
+  --line-height-2: 2.1rem;
+  --letter-spacing-2: 0.5rem;
   --paragraph-spacing-2: 0rem;
 
-  --font-size-3: 1.6rem;
-  --line-height-3: 1.8rem;
-  --letter-spacing-3: 0.1rem;
+  --font-size-3: 1.5rem;
+  --line-height-3: 1.7rem;
+  --letter-spacing-3: 0rem;
   --paragraph-spacing-3: 0rem;
 }
 
@@ -41,7 +49,7 @@ h3 p,
   :root {
     --font-size-2: 2.6rem;
     --line-height-2: 2.8rem;
-    --letter-spacing-2: 0.2rem;
+    --letter-spacing-2: 0.1rem;
     --paragraph-spacing-2: 0rem;
 
     --font-size-3: 2rem;

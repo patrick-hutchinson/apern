@@ -3,11 +3,10 @@ import * as THREE from "three";
 const MODEL_PROFILES = {
   "/assets/models/13/13-optimized.glb": {
     limits: {
-      minAzimuth: -Infinity,
-      maxAzimuth: Infinity,
-      // Lock vertical orbit so dragging only rotates left/right.
-      minOrbitY: -20.0,
-      maxOrbitY: -20.0,
+      minAzimuth: -167.5,
+      maxAzimuth: -16.6,
+      minOrbitY: -23.9,
+      maxOrbitY: 10.0,
     },
     initial: {
       azimuth: -73.7,
