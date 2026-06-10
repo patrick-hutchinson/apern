@@ -24,13 +24,13 @@ const MODEL_PROFILES = {
   "/assets/models/14/14-optimized.glb": {
     limits: {
       minAzimuth: -166.0,
-      maxAzimuth: -38.0,
-      minOrbitY: 4.7,
-      maxOrbitY: 90.0,
+      maxAzimuth: -62.3,
+      minOrbitY: 51.0,
+      maxOrbitY: 74.5,
     },
     initial: {
-      azimuth: 76.9,
-      orbitY: 7.2,
+      azimuth: -133.3,
+      orbitY: 74.5,
     },
   },
   "/assets/models/16/16-optimized.glb": {
