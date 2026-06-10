@@ -1,7 +1,9 @@
 @font-face {
   font-family: "TN7R";
-  src: url("/fonts/TimesNewRomanSevenRegular.woff2") format("woff2");
-  font-weight: 450;
+  src:
+    url("/assets/fonts/TimesNewRomanSevenRegular.woff2") format("woff2"),
+    url("/assets/fonts/TimesNewRomanSevenRegular.woff") format("woff");
+  font-weight: 375;
   font-style: normal;
   font-display: swap;
 }
