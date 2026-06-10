@@ -71,7 +71,7 @@ const AboutPage = ({ page, landingPage }) => {
         ) : null}
       </motion.div>
 
-      <motion.div
+      {/* <motion.div
         animate={{ opacity: isClosing ? 0 : 1 }}
         transition={{ duration: 2, ease: "easeOut" }}
         style={{ pointerEvents: isClosing ? "none" : "auto" }}
@@ -85,7 +85,7 @@ const AboutPage = ({ page, landingPage }) => {
             `/?section=${encodeURIComponent(section.sectionKey ?? section.sectionTitle ?? "")}&view=text`
           }
         />
-      </motion.div>
+      </motion.div> */}
     </main>
   );
 };
