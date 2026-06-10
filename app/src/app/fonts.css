@@ -9,13 +9,13 @@
 }
 
 :root {
-  --font-size-2: 2rem;
-  --line-height-2: 2.1rem;
+  --font-size-2: 1.7rem;
+  --line-height-2: 1.85rem;
   --letter-spacing-2: 0.1rem;
   --paragraph-spacing-2: 0rem;
 
-  --font-size-3: 1.5rem;
-  --line-height-3: 1.7rem;
+  --font-size-3: 1.3rem;
+  --line-height-3: 1.45rem;
   --letter-spacing-3: 0rem;
   --paragraph-spacing-3: 0rem;
 }
