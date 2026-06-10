@@ -163,4 +163,6 @@
 .aboutLink {
   position: relative;
   top: -2px;
+  display: flex;
+  align-items: top;
 }
