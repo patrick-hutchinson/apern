@@ -14,21 +14,30 @@ const SECTION_MODELS = [
   { thumbnailPath: "/assets/models/16/16.gif" },
 ];
 
-const AboutPage = ({ page, landingPage }) => {
+const AboutPage = ({ page, landingPage, selectedSectionKey }) => {
   const [isClosing, setIsClosing] = useState(false);
   const navigate = useAnimatedNavigation();
   const sections = landingPage?.sections ?? [];
-  const defaultThumbnail = SECTION_MODELS[0].thumbnailPath;
-  const defaultSection = sections[0];
+  const selectedSection = sections.find(
+    (section) => section.sectionKey === selectedSectionKey || section.sectionTitle === selectedSectionKey,
+  );
+  const selectedSectionIndex = selectedSection ? sections.indexOf(selectedSection) : 0;
+  const currentSection = selectedSection ?? sections[0];
+  const defaultThumbnail = SECTION_MODELS[Math.max(0, selectedSectionIndex)]?.thumbnailPath ?? SECTION_MODELS[0].thumbnailPath;
   const credits = page?.credits;
 
+  const getReturnSectionKey = () => {
+    const storedSectionKey = typeof window !== "undefined" ? window.sessionStorage.getItem("lastSection") : "";
+    return selectedSectionKey || storedSectionKey || currentSection?.sectionKey || currentSection?.sectionTitle || "";
+  };
+
   const handleThumbnailClick = () => {
-    if (!defaultSection) {
+    const sectionKey = getReturnSectionKey();
+    if (!sectionKey) {
       navigate("/?view=model");
       return;
     }
-    const sectionKey = encodeURIComponent(defaultSection.sectionKey ?? defaultSection.sectionTitle ?? "");
-    navigate(`/?section=${sectionKey}&view=model`);
+    navigate(`/?section=${encodeURIComponent(sectionKey)}&view=model`);
   };
 
   const handleAboutClose = () => {
@@ -36,11 +45,12 @@ const AboutPage = ({ page, landingPage }) => {
     setIsClosing(true);
 
     window.setTimeout(() => {
-      if (typeof window !== "undefined" && window.history.length > 1) {
-        window.history.back();
+      const sectionKey = getReturnSectionKey();
+      if (sectionKey) {
+        navigate(`/?section=${encodeURIComponent(sectionKey)}&view=text`);
         return;
       }
-      navigate("/?view=model");
+      setIsClosing(false);
     }, 2000);
   };
 

@@ -55,7 +55,17 @@ const LandingPage = ({ page, selectedSectionKey, selectedView }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [view]);
 
+  useEffect(() => {
+    const activeSectionKey = activeSection?.sectionKey ?? activeSection?.sectionTitle ?? "";
+    if (!activeSectionKey) return;
+    window.sessionStorage.setItem("lastSection", activeSectionKey);
+  }, [activeSection]);
+
   if (!activeSection) return null;
+
+  const activeSectionKey = activeSection.sectionKey ?? activeSection.sectionTitle ?? "";
+  const activeSectionParam = encodeURIComponent(activeSectionKey);
+  const activeSectionAboutPath = `/about?section=${activeSectionParam}`;
 
   return (
     <main className={styles.page}>
@@ -68,7 +78,11 @@ const LandingPage = ({ page, selectedSectionKey, selectedView }) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 2, ease: "easeOut" }}
           >
-            <LandingPageHeader thumbnailPath={activeModel.thumbnailPath} setView={setView} />
+            <LandingPageHeader
+              thumbnailPath={activeModel.thumbnailPath}
+              setView={setView}
+              infoPath={activeSectionAboutPath}
+            />
 
             <AnimatePresence mode="wait">
               <motion.div
