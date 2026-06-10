@@ -1,24 +1,28 @@
 import * as THREE from "three";
 
-function softenTexture(texture, anisotropy = 16) {
+function refineTexture(texture, options = {}) {
   if (!texture) return null;
+  const { anisotropy = 16, colorSpace = THREE.NoColorSpace } = options;
+
   texture.generateMipmaps = true;
   // Trilinear filtering avoids visible mip-step pixel blocks on grazing angles.
   texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.anisotropy = anisotropy;
+  texture.colorSpace = colorSpace;
   texture.needsUpdate = true;
   return texture;
 }
 
-export function createIceMaterial(sourceMaterial) {
-  const map = softenTexture(sourceMaterial?.map ?? null);
-  const normalMap = softenTexture(sourceMaterial?.normalMap ?? null);
-  const roughnessMap = softenTexture(sourceMaterial?.roughnessMap ?? null);
-  const metalnessMap = softenTexture(sourceMaterial?.metalnessMap ?? null);
-  const aoMap = softenTexture(sourceMaterial?.aoMap ?? null);
-  const displacementMap = softenTexture(sourceMaterial?.displacementMap ?? null);
-  const alphaMap = softenTexture(sourceMaterial?.alphaMap ?? null);
+export function createIceMaterial(sourceMaterial, options = {}) {
+  const { anisotropy = 16 } = options;
+  const map = refineTexture(sourceMaterial?.map ?? null, { anisotropy, colorSpace: THREE.SRGBColorSpace });
+  const normalMap = refineTexture(sourceMaterial?.normalMap ?? null, { anisotropy });
+  const roughnessMap = refineTexture(sourceMaterial?.roughnessMap ?? null, { anisotropy });
+  const metalnessMap = refineTexture(sourceMaterial?.metalnessMap ?? null, { anisotropy });
+  const aoMap = refineTexture(sourceMaterial?.aoMap ?? null, { anisotropy });
+  const displacementMap = refineTexture(sourceMaterial?.displacementMap ?? null, { anisotropy });
+  const alphaMap = refineTexture(sourceMaterial?.alphaMap ?? null, { anisotropy });
 
   const material = new THREE.MeshPhysicalMaterial({
     map,

@@ -10,7 +10,13 @@ import { updateMorphTargets } from "./animation/morphLoop";
 import { setupIceLighting } from "./lighting/iceLighting";
 import { createMaskedCompositeRenderer } from "./render/maskedComposite";
 import { frameCameraToModel, getVisibleMeshBounds } from "./utils/modelFraming";
-import { applyInitialOrbitAngles, applyOrbitControlsProfile, updateOrbitEdgeSmoothing } from "./controls/orbitProfiles";
+import {
+  applyInitialOrbitAngles,
+  applyOrbitControlsProfile,
+  createInitialOrbitNudge,
+  updateInitialOrbitNudge,
+  updateOrbitEdgeSmoothing,
+} from "./controls/orbitProfiles";
 import styles from "../../LandingPage.module.css";
 
 import { motion } from "framer-motion";
@@ -59,7 +65,7 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
     const renderer = new THREE.WebGLRenderer({ antialias: true, stencil: true });
     renderer.autoClear = false;
     renderer.setClearColor(0x000000, 1);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
@@ -80,9 +86,17 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
     const maskedComposite = createMaskedCompositeRenderer();
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    const maxTextureAnisotropy = renderer.capabilities.getMaxAnisotropy();
     const isModel13 = modelPath === "/assets/models/13/13-optimized.glb";
     const isModel16 = modelPath === "/assets/models/16/16-optimized.glb";
     const orbitProfileState = applyOrbitControlsProfile(controls, modelPath, { isTouch: Boolean(isTouch) });
+    let initialOrbitNudge = null;
+    const cancelInitialOrbitNudge = () => {
+      initialOrbitNudge = null;
+    };
+    renderer.domElement.addEventListener("pointerdown", cancelInitialOrbitNudge, { passive: true });
+    renderer.domElement.addEventListener("wheel", cancelInitialOrbitNudge, { passive: true });
+    renderer.domElement.addEventListener("touchstart", cancelInitialOrbitNudge, { passive: true });
     const getModelFillRatio = (clientWidth = window.innerWidth) => {
       const isMobile = clientWidth <= 900;
       if (isModel16) return 3.2;
@@ -117,9 +131,11 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
           object.receiveShadow = false;
 
           if (Array.isArray(object.material)) {
-            object.material = object.material.map((material) => createIceMaterial(material));
+            object.material = object.material.map((material) =>
+              createIceMaterial(material, { anisotropy: maxTextureAnisotropy }),
+            );
           } else {
-            object.material = createIceMaterial(object.material);
+            object.material = createIceMaterial(object.material, { anisotropy: maxTextureAnisotropy });
           }
 
           if (!object.morphTargetDictionary || !object.morphTargetInfluences) return;
@@ -174,6 +190,7 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
             fillRatio: getModelFillRatio(mount.clientWidth),
           });
           applyInitialOrbitAngles(controls, orbitProfileState);
+          initialOrbitNudge = createInitialOrbitNudge(controls, orbitProfileState, { isTouch: Boolean(isTouch) });
         }
 
         setStatus?.("");
@@ -208,6 +225,9 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
 
       updateMorphTargets(morphTargets, clock.getElapsedTime());
       updateOrbitEdgeSmoothing(controls, orbitProfileState);
+      initialOrbitNudge = updateInitialOrbitNudge(controls, initialOrbitNudge, performance.now())
+        ? initialOrbitNudge
+        : null;
 
       if (rotationDebugRef.current) {
         const azimuthDeg = THREE.MathUtils.radToDeg(controls.getAzimuthalAngle());
@@ -243,6 +263,9 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener("resize", resize);
+      renderer.domElement.removeEventListener("pointerdown", cancelInitialOrbitNudge);
+      renderer.domElement.removeEventListener("wheel", cancelInitialOrbitNudge);
+      renderer.domElement.removeEventListener("touchstart", cancelInitialOrbitNudge);
       controls.dispose();
       environmentMap.dispose();
       pmremGenerator.dispose();

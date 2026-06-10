@@ -61,6 +61,14 @@ const TOUCH_DEFAULTS = {
   edgeDamping: 0.024,
 };
 
+const INITIAL_NUDGE = {
+  desktopAzimuth: 15,
+  touchAzimuth: 21,
+  dampingMultiplier: 1 / 3,
+  desktopDurationMs: 4800,
+  touchDurationMs: 5400,
+};
+
 function orbitYToPolar(orbitYDeg) {
   return THREE.MathUtils.degToRad(90 + orbitYDeg);
 }
@@ -140,6 +148,48 @@ export function applyInitialOrbitAngles(controls, profileState) {
     THREE.MathUtils.degToRad(profileState.initial.azimuth),
     orbitYToPolar(profileState.initial.orbitY),
   );
+}
+
+export function createInitialOrbitNudge(controls, profileState, options = {}) {
+  if (!profileState?.limits) return null;
+
+  const { isTouch = false } = options;
+  const currentAzimuth = THREE.MathUtils.radToDeg(controls.getAzimuthalAngle());
+  const requestedOffset = isTouch ? INITIAL_NUDGE.touchAzimuth : INITIAL_NUDGE.desktopAzimuth;
+  const roomRight = profileState.limits.maxAzimuth - currentAzimuth;
+  const roomLeft = currentAzimuth - profileState.limits.minAzimuth;
+  const direction = roomRight >= requestedOffset || roomRight >= roomLeft ? 1 : -1;
+  const availableOffset = direction > 0 ? roomRight : roomLeft;
+  const azimuthOffset = Math.min(requestedOffset, availableOffset);
+
+  if (azimuthOffset < 1) return null;
+
+  return {
+    startedAt: null,
+    targetAzimuth: currentAzimuth + direction * azimuthOffset,
+    polar: controls.getPolarAngle(),
+    damping: profileState.baseDamping * INITIAL_NUDGE.dampingMultiplier,
+    maxDurationMs: isTouch ? INITIAL_NUDGE.touchDurationMs : INITIAL_NUDGE.desktopDurationMs,
+  };
+}
+
+export function updateInitialOrbitNudge(controls, nudge, nowMs) {
+  if (!nudge) return false;
+  if (nudge.startedAt === null) {
+    nudge.startedAt = nowMs;
+  }
+
+  const elapsedMs = nowMs - nudge.startedAt;
+  const currentAzimuth = THREE.MathUtils.radToDeg(controls.getAzimuthalAngle());
+  const remainingAzimuth = nudge.targetAzimuth - currentAzimuth;
+
+  if (elapsedMs >= nudge.maxDurationMs || Math.abs(remainingAzimuth) < 0.05) {
+    return false;
+  }
+
+  const nextAzimuth = currentAzimuth + remainingAzimuth * nudge.damping;
+  setOrbitAngles(controls, THREE.MathUtils.degToRad(nextAzimuth), nudge.polar);
+  return true;
 }
 
 export function updateOrbitEdgeSmoothing(controls, profileState) {
