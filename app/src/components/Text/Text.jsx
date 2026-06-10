@@ -1,5 +1,6 @@
 import { PortableText } from "@portabletext/react";
 import AnimationLink from "@/components/Animation/AnimationLink";
+import styles from "./Text.module.css";
 
 const isEffectivelyEmpty = (children) => {
   if (!Array.isArray(children)) return !children;
@@ -32,6 +33,12 @@ const Text = ({ text, typo, className, onClick, style }) => {
                 return <p style={{ minHeight: "1em" }}>&nbsp;</p>;
               }
               return <p>{children}</p>;
+            },
+            zwischenueberschrift: ({ children }) => {
+              if (isEffectivelyEmpty(children)) {
+                return <p className={styles.zwischenueberschrift} style={{ minHeight: "1em" }}>&nbsp;</p>;
+              }
+              return <p className={styles.zwischenueberschrift}>{children}</p>;
             },
           },
           marks: {

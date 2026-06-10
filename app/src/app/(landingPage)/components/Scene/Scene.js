@@ -225,9 +225,7 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
 
       updateMorphTargets(morphTargets, clock.getElapsedTime());
       updateOrbitEdgeSmoothing(controls, orbitProfileState);
-      initialOrbitNudge = updateInitialOrbitNudge(controls, initialOrbitNudge, performance.now())
-        ? initialOrbitNudge
-        : null;
+      initialOrbitNudge = updateInitialOrbitNudge(controls, initialOrbitNudge, performance.now()) ? initialOrbitNudge : null;
 
       if (rotationDebugRef.current) {
         const azimuthDeg = THREE.MathUtils.radToDeg(controls.getAzimuthalAngle());
@@ -298,14 +296,14 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
         text={activeSection?.sectionKey}
         typo="h2"
       />
-      {
-        // <div className={styles.rotationDebug}>
-        // <span ref={rotationDebugRef} className={styles.rotationDebugText} />
-        // <button type="button" className={styles.rotationDebugCopy} onClick={handleCopyDebug}>
-        // {copied ? "Copied" : "Copy"}
-        //</button>
-        // </div>
-      }
+
+      {/* <div className={styles.rotationDebug}>
+        <span ref={rotationDebugRef} className={styles.rotationDebugText} />
+        <button type="button" className={styles.rotationDebugCopy} onClick={handleCopyDebug}>
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div> */}
+
       <div ref={mountRef} className={styles.canvas} />
     </motion.div>
   );

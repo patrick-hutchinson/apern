@@ -77,17 +77,19 @@
 }
 
 .headerVideoSlot {
-  width: 72px;
-  height: 72px;
+  width: 62px;
+  height: 62px;
   position: relative;
   flex-shrink: 0;
   filter: grayscale();
+  top: -15px;
 }
 
 @media screen and (max-width: 768px) {
   .headerVideoSlot {
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
+    top: -5px;
   }
 }
 
