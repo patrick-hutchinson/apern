@@ -24,6 +24,47 @@ export const site = defineType({
       description: 'As seen on Google Search Results (max. 160 characters)',
       validation: (Rule) => Rule.max(160),
     }),
+    defineField({
+      name: 'siteUrl',
+      title: 'Site URL',
+      type: 'url',
+      description: 'Canonical production URL, e.g. https://example.com',
+    }),
+    defineField({
+      name: 'locale',
+      title: 'Site Locale',
+      type: 'string',
+      description: 'Primary language/region for metadata and social previews.',
+      initialValue: 'en',
+      options: {
+        list: [
+          {title: 'English', value: 'en'},
+          {title: 'English (US)', value: 'en-US'},
+          {title: 'English (UK)', value: 'en-GB'},
+          {title: 'German', value: 'de'},
+          {title: 'German (Germany)', value: 'de-DE'},
+          {title: 'German (Switzerland)', value: 'de-CH'},
+          {title: 'French', value: 'fr'},
+          {title: 'Italian', value: 'it'},
+        ],
+      },
+    }),
+    defineField({
+      name: 'businessType',
+      title: 'Business Type',
+      type: 'string',
+      description: 'Schema.org type used for structured data.',
+      initialValue: 'Organization',
+      options: {
+        list: [
+          {title: 'Organization', value: 'Organization'},
+          {title: 'Local Business', value: 'LocalBusiness'},
+          {title: 'Health And Beauty Business', value: 'HealthAndBeautyBusiness'},
+          {title: 'Lodging Business', value: 'LodgingBusiness'},
+          {title: 'Sports Activity Location', value: 'SportsActivityLocation'},
+        ],
+      },
+    }),
 
     defineField({
       name: 'favicon',
@@ -34,6 +75,23 @@ export const site = defineType({
       options: {
         hotspot: false,
       },
+    }),
+    defineField({
+      name: 'shareImage',
+      title: 'Share Image',
+      description: 'Image used for Open Graph and Twitter previews. Recommended: 1200x630.',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        {
+          name: 'alt',
+          title: 'Alt Text',
+          type: 'string',
+          description: 'Brief description for social image metadata.',
+        },
+      ],
     }),
     defineField({
       name: 'address',
@@ -72,6 +130,35 @@ export const site = defineType({
     defineField({
       name: 'phone',
       type: 'string',
+    }),
+    defineField({
+      name: 'socials',
+      title: 'Social Profiles',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          options: {columns: 2},
+          fields: [
+            {
+              name: 'platform',
+              title: 'Platform',
+              type: 'string',
+            },
+            {
+              name: 'link',
+              title: 'URL',
+              type: 'url',
+            },
+          ],
+          preview: {
+            select: {
+              title: 'platform',
+              subtitle: 'link',
+            },
+          },
+        },
+      ],
     }),
   ],
   preview: {

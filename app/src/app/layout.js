@@ -13,6 +13,8 @@ import { ViewportProvider } from "../context/ViewportContext";
 const fallbackSite = {
   title: "Apern",
   description: "",
+  locale: "en",
+  businessType: "Organization",
 };
 
 const shareImage = {
@@ -28,7 +30,32 @@ const buildSanityImageUrl = (baseUrl, width, height = width) => {
   return `${baseUrl}${separator}w=${width}&h=${height}&fit=crop&auto=format`;
 };
 
-export async function generateMetadata() {
+const normalizeSiteUrl = (url) => {
+  if (!url) return null;
+  try {
+    const parsedUrl = new URL(url);
+    parsedUrl.pathname = parsedUrl.pathname.replace(/\/$/, "");
+    return parsedUrl.toString();
+  } catch {
+    return null;
+  }
+};
+
+const absolutizeUrl = (url, siteUrl) => {
+  if (!url) return null;
+  try {
+    return new URL(url, siteUrl ?? undefined).toString();
+  } catch {
+    return url;
+  }
+};
+
+const toOpenGraphLocale = (locale) => locale?.replace("-", "_");
+
+const cleanObject = (object) =>
+  Object.fromEntries(Object.entries(object).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+
+const getResolvedSite = async () => {
   let site = fallbackSite;
 
   try {
@@ -38,12 +65,54 @@ export async function generateMetadata() {
     site = fallbackSite;
   }
 
+  return {
+    ...fallbackSite,
+    ...site,
+  };
+};
+
+const getSiteMeta = (site) => {
   const resolvedTitle = site?.title || fallbackSite.title;
   const resolvedDescription = site?.description || fallbackSite.description;
   const resolvedOwner = site?.owner || undefined;
-  const resolvedShareImage = { ...shareImage, alt: resolvedTitle };
-
+  const resolvedLocale = site?.locale || fallbackSite.locale;
+  const resolvedSiteUrl = normalizeSiteUrl(site?.siteUrl);
   const faviconBaseUrl = site?.favicon?.asset?.url;
+  const shareImageBaseUrl = site?.shareImage?.asset?.url;
+  const resolvedShareImage = shareImageBaseUrl
+    ? {
+        url: buildSanityImageUrl(shareImageBaseUrl, 1200, 630),
+        width: 1200,
+        height: 630,
+        alt: site?.shareImage?.alt || resolvedTitle,
+      }
+    : { ...shareImage, url: absolutizeUrl(shareImage.url, resolvedSiteUrl) ?? shareImage.url, alt: resolvedTitle };
+  const socialLinks = (site?.socials ?? []).map((social) => social?.link).filter(Boolean);
+
+  return {
+    resolvedTitle,
+    resolvedDescription,
+    resolvedOwner,
+    resolvedLocale,
+    resolvedSiteUrl,
+    faviconBaseUrl,
+    resolvedShareImage,
+    socialLinks,
+  };
+};
+
+export async function generateMetadata() {
+  const site = await getResolvedSite();
+  const {
+    resolvedTitle,
+    resolvedDescription,
+    resolvedOwner,
+    resolvedLocale,
+    resolvedSiteUrl,
+    faviconBaseUrl,
+    resolvedShareImage,
+  } = getSiteMeta(site);
+
   const sanityIcons = faviconBaseUrl
     ? [
         { url: buildSanityImageUrl(faviconBaseUrl, 16), sizes: "16x16", type: "image/png" },
@@ -54,10 +123,14 @@ export async function generateMetadata() {
     : null;
 
   return {
+    metadataBase: resolvedSiteUrl ? new URL(resolvedSiteUrl) : undefined,
     title: resolvedTitle,
     description: resolvedDescription,
     applicationName: resolvedTitle,
     creator: resolvedOwner,
+    alternates: {
+      canonical: resolvedSiteUrl || "/",
+    },
     icons: {
       icon: sanityIcons || [
         { url: "/icons/favicon/favicon.ico" },
@@ -74,6 +147,9 @@ export async function generateMetadata() {
     openGraph: {
       title: resolvedTitle,
       description: resolvedDescription,
+      url: resolvedSiteUrl || undefined,
+      siteName: resolvedTitle,
+      locale: toOpenGraphLocale(resolvedLocale),
       type: "website",
       images: [resolvedShareImage],
     },
@@ -86,16 +162,63 @@ export async function generateMetadata() {
   };
 }
 
+const getStructuredData = (site) => {
+  const {
+    resolvedTitle,
+    resolvedDescription,
+    resolvedOwner,
+    resolvedSiteUrl,
+    faviconBaseUrl,
+    resolvedShareImage,
+    socialLinks,
+  } = getSiteMeta(site);
+  const address = site?.address;
+  const postalAddress =
+    address?.street || address?.city || address?.postcode || address?.country
+      ? cleanObject({
+          "@type": "PostalAddress",
+          streetAddress: address?.street,
+          postalCode: address?.postcode,
+          addressLocality: address?.city,
+          addressCountry: address?.country,
+        })
+      : undefined;
+  const logoUrl = faviconBaseUrl ? buildSanityImageUrl(faviconBaseUrl, 512) : undefined;
+
+  return cleanObject({
+    "@context": "https://schema.org",
+    "@type": site?.businessType || fallbackSite.businessType,
+    name: resolvedTitle,
+    legalName: resolvedOwner,
+    description: resolvedDescription,
+    url: resolvedSiteUrl,
+    logo: logoUrl,
+    image: resolvedShareImage?.url,
+    email: site?.email,
+    telephone: site?.phone,
+    address: postalAddress,
+    sameAs: socialLinks.length > 0 ? socialLinks : undefined,
+  });
+};
+
 export const dynamic = "force-dynamic";
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const site = await getResolvedSite();
+  const { resolvedLocale } = getSiteMeta(site);
+  const structuredData = getStructuredData(site);
+
   return (
     <ViewTransitions>
-      <html lang="en">
+      <html lang={resolvedLocale}>
         <DeviceProvider>
           <ViewportProvider>
             <ScrollRestorationController />
             <body>
+              <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+              />
               {children}
             </body>
           </ViewportProvider>

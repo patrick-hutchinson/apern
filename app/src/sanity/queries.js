@@ -1,9 +1,24 @@
 export const siteQuery = `*[_type=="site"][0]{
   title,
   owner,
+  siteUrl,
+  locale,
+  businessType,
   favicon{
     asset->{
       url
+    }
+  },
+  shareImage{
+    alt,
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
     }
   },
   description,
