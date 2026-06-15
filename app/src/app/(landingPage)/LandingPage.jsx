@@ -11,6 +11,7 @@ import Text from "@/components/Text/Text";
 
 import LandingPageHeader from "./components/LandingPageHeader";
 import LandingPageFooter from "./components/LandingPageFooter";
+import SceneControls from "./components/SceneControls/SceneControls";
 
 import styles from "./LandingPage.module.css";
 
@@ -23,9 +24,14 @@ const SECTION_MODELS = [
 const LandingPage = ({ page, selectedSectionKey, selectedView }) => {
   const [view, setView] = useState(selectedView === "text" ? "text" : "model");
   const [activeSection, setActiveSection] = useState();
+  const [showHDRI, setShowHDRI] = useState(false);
 
-  const hdri = createHDRI;
-  const activeSectionIndex = page?.sections?.findIndex((section) => section.sectionKey === activeSection?.sectionKey);
+  const activeSectionIndex = page?.sections?.findIndex(
+    (section) =>
+      section === activeSection ||
+      (section.sectionKey && section.sectionKey === activeSection?.sectionKey) ||
+      (section.sectionTitle && section.sectionTitle === activeSection?.sectionTitle),
+  );
   const activeModel = SECTION_MODELS[Math.max(0, activeSectionIndex)] ?? SECTION_MODELS[0];
 
   if (!page || page.length === 0) return;
@@ -106,14 +112,25 @@ const LandingPage = ({ page, selectedSectionKey, selectedView }) => {
             />
           </motion.div>
         ) : (
-          <Scene
-            key={`${activeSection.sectionKey}-${activeModel.modelPath}`}
-            createEnvironmentScene={hdri}
-            activeSection={activeSection}
-            activeSectionIndex={activeSectionIndex}
-            modelPath={activeModel.modelPath}
-            setView={setView}
-          />
+          <>
+            <Scene
+              key={`${activeSection.sectionKey}-${activeModel.modelPath}`}
+              createEnvironmentScene={createHDRI}
+              activeSection={activeSection}
+              activeSectionIndex={activeSectionIndex}
+              modelPath={activeModel.modelPath}
+              setView={setView}
+              showHDRI={showHDRI}
+            />
+            <SceneControls
+              sections={page.sections}
+              activeSection={activeSection}
+              setActiveSection={setActiveSection}
+              setView={setView}
+              showHDRI={showHDRI}
+              setShowHDRI={setShowHDRI}
+            />
+          </>
         )}
       </AnimatePresence>
     </main>

@@ -5,14 +5,19 @@ import { useState } from "react";
 import styles from "./SceneControls.module.css";
 
 export default function SceneControls({
-  modelVariant,
-  setModelVariant,
+  sections = [],
+  activeSection,
+  setActiveSection,
+  setView,
   showHDRI,
   setShowHDRI,
-  lightsEnabled,
-  setLightsEnabled,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleSectionClick = (section) => {
+    setActiveSection(section);
+    setView("model");
+  };
 
   return (
     <div className={styles.menuRoot}>
@@ -30,20 +35,20 @@ export default function SceneControls({
 
       <div className={`${styles.menuPanel} ${isOpen ? styles.menuPanelOpen : ""}`}>
         <p className={styles.menuLabel}>Scene</p>
-        <button
-          type="button"
-          className={`${styles.menuButton} ${modelVariant === "compressed01" ? styles.active : ""}`}
-          onClick={() => setModelVariant("compressed01")}
-        >
-          Ice 01
-        </button>
-        <button
-          type="button"
-          className={`${styles.menuButton} ${modelVariant === "compressed02" ? styles.active : ""}`}
-          onClick={() => setModelVariant("compressed02")}
-        >
-          Ice 02
-        </button>
+        {sections.map((section, index) => {
+          const isActive = section === activeSection || section.sectionKey === activeSection?.sectionKey;
+          return (
+            <button
+              key={section.sectionKey || section.sectionTitle || index}
+              type="button"
+              aria-pressed={isActive}
+              className={`${styles.menuButton} ${isActive ? styles.active : ""}`}
+              onClick={() => handleSectionClick(section)}
+            >
+              {section.sectionTitle || `Stone ${index + 1}`}
+            </button>
+          );
+        })}
 
         <p className={styles.menuLabel}>View</p>
         <button
@@ -52,13 +57,6 @@ export default function SceneControls({
           onClick={() => setShowHDRI((value) => !value)}
         >
           {showHDRI ? "Hide HDRI" : "Show HDRI"}
-        </button>
-        <button
-          type="button"
-          className={`${styles.menuButton} ${lightsEnabled ? styles.active : ""}`}
-          onClick={() => setLightsEnabled((value) => !value)}
-        >
-          {lightsEnabled ? "Lights On" : "Lights Off"}
         </button>
       </div>
     </div>

@@ -24,13 +24,25 @@ import { motion } from "framer-motion";
 import Text from "@/components/Text/Text";
 import { DeviceContext } from "@/context/DeviceContext";
 
-export default function Scene({ createEnvironmentScene, lightsEnabled = true, activeSection, modelPath, setView }) {
+export default function Scene({
+  createEnvironmentScene,
+  lightsEnabled = true,
+  activeSection,
+  modelPath,
+  setView,
+  showHDRI = false,
+}) {
   const { isTouch } = useContext(DeviceContext);
   const [status, setStatus] = useState("Loading...");
   const [copied, setCopied] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const mountRef = useRef(null);
   const rotationDebugRef = useRef(null);
+  const showHDRIRef = useRef(showHDRI);
+
+  useEffect(() => {
+    showHDRIRef.current = showHDRI;
+  }, [showHDRI]);
 
   const handleTextClick = () => {
     setView("text");
@@ -74,6 +86,8 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
     renderer.domElement.style.height = "100%";
     mount.appendChild(renderer.domElement);
 
+    const isModel13 = modelPath === "/assets/models/13/13-optimized.glb";
+    const isModel16 = modelPath === "/assets/models/16/16-optimized.glb";
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     const arcticEnvironment = createEnvironmentScene();
     const environmentMap = pmremGenerator.fromScene(arcticEnvironment.scene, 0.06).texture;
@@ -87,8 +101,7 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
 
     const controls = new OrbitControls(camera, renderer.domElement);
     const maxTextureAnisotropy = renderer.capabilities.getMaxAnisotropy();
-    const isModel13 = modelPath === "/assets/models/13/13-optimized.glb";
-    const isModel16 = modelPath === "/assets/models/16/16-optimized.glb";
+    const materialOptions = { anisotropy: maxTextureAnisotropy };
     const orbitProfileState = applyOrbitControlsProfile(controls, modelPath, { isTouch: Boolean(isTouch) });
     let initialOrbitNudge = null;
     const cancelInitialOrbitNudge = () => {
@@ -131,11 +144,9 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
           object.receiveShadow = false;
 
           if (Array.isArray(object.material)) {
-            object.material = object.material.map((material) =>
-              createIceMaterial(material, { anisotropy: maxTextureAnisotropy }),
-            );
+            object.material = object.material.map((material) => createIceMaterial(material, materialOptions));
           } else {
-            object.material = createIceMaterial(object.material, { anisotropy: maxTextureAnisotropy });
+            object.material = createIceMaterial(object.material, materialOptions);
           }
 
           if (!object.morphTargetDictionary || !object.morphTargetInfluences) return;
@@ -250,7 +261,19 @@ export default function Scene({ createEnvironmentScene, lightsEnabled = true, ac
 
       controls.update();
       if (modelRoot) {
-        maskedComposite.renderMasked(renderer, scene, camera);
+        if (showHDRIRef.current) {
+          renderer.setRenderTarget(null);
+          renderer.clear(true, true, true);
+          renderer.render(arcticEnvironment.scene, camera);
+
+          const savedBackground = scene.background;
+          scene.background = null;
+          renderer.clearDepth();
+          renderer.render(scene, camera);
+          scene.background = savedBackground;
+        } else {
+          maskedComposite.renderMasked(renderer, scene, camera);
+        }
       } else {
         renderer.setRenderTarget(null);
         renderer.clear(true, true, true);

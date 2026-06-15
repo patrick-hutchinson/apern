@@ -61,6 +61,13 @@ export function createHDRI() {
     emissive: 0x0a0a0a,
     emissiveIntensity: 0.08,
   });
+  const greyIceMat = new THREE.MeshStandardMaterial({
+    color: 0xcccccc,
+    metalness: 0,
+    roughness: 0.5,
+    emissive: 0x030303,
+    emissiveIntensity: 0.03,
+  });
 
   const iceCluster = new THREE.Group();
   const icePositions = [
@@ -71,14 +78,23 @@ export function createHDRI() {
     [2.8, -1.2, 3.5, 1.25],
     [0.0, -1.9, 2.9, 1.1],
   ];
+  const greyIcePositions = [
+    [0.8, 3.7, 0.7, 1.15],
+    [2.0, 2.5, -0.4, 1.35],
+    [3.4, 1.2, -1.9, 1.1],
+    [0.1, 4.2, 1.8, 0.95],
+  ];
 
-  for (const [x, y, z, s] of icePositions) {
-    const m = new THREE.Mesh(iceGeo, iceMat);
+  const addIceMesh = ([x, y, z, s], material) => {
+    const m = new THREE.Mesh(iceGeo, material);
     m.position.set(x, y, z);
     m.scale.setScalar(s);
     m.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
     iceCluster.add(m);
-  }
+  };
+
+  icePositions.forEach((position) => addIceMesh(position, iceMat));
+  greyIcePositions.forEach((position) => addIceMesh(position, greyIceMat));
   scene.add(iceCluster);
 
   const envKey = new THREE.DirectionalLight(0xffffff, 4.8);
@@ -93,6 +109,7 @@ export function createHDRI() {
     sky.material.dispose();
     iceGeo.dispose();
     iceMat.dispose();
+    greyIceMat.dispose();
   };
 
   return { scene, dispose };
