@@ -23,27 +23,29 @@ const MODEL_PROFILES = {
   },
   "/assets/models/14/14-optimized.glb": {
     limits: {
-      minAzimuth: -166.0,
-      maxAzimuth: -62.3,
-      minOrbitY: 51.0,
-      maxOrbitY: 74.5,
+      minAzimuth: 41.8,
+      maxAzimuth: 129.1,
+      minOrbitY: -56.4,
+      maxOrbitY: 17.8,
     },
     initial: {
-      azimuth: -133.3,
-      orbitY: 74.5,
+      azimuth: 85.45,
+      orbitY: -19.3,
     },
+    fixedDistance: 1.827,
   },
   "/assets/models/16/16-optimized.glb": {
     limits: {
-      minAzimuth: -72.0,
-      maxAzimuth: -19.3,
-      minOrbitY: -36.5,
-      maxOrbitY: 25.6,
+      minAzimuth: -69.7,
+      maxAzimuth: 25.1,
+      minOrbitY: -34.8,
+      maxOrbitY: 51.3,
     },
     initial: {
-      azimuth: -48.25,
-      orbitY: -5.45,
+      azimuth: -22.3,
+      orbitY: 8.25,
     },
+    fixedDistance: 2.319,
   },
 };
 
@@ -73,8 +75,14 @@ function orbitYToPolar(orbitYDeg) {
   return THREE.MathUtils.degToRad(90 + orbitYDeg);
 }
 
-export function setOrbitAngles(controls, azimuthRad, polarRad) {
+export function setOrbitAngles(controls, azimuthRad, polarRad, radiusOverride) {
   if (typeof controls.setAzimuthalAngle === "function" && typeof controls.setPolarAngle === "function") {
+    if (typeof radiusOverride === "number" && Number.isFinite(radiusOverride)) {
+      const offset = controls.object.position.clone().sub(controls.target);
+      const currentRadius = Math.max(offset.length(), 1e-6);
+      offset.multiplyScalar(radiusOverride / currentRadius);
+      controls.object.position.copy(controls.target).add(offset);
+    }
     controls.setAzimuthalAngle(azimuthRad);
     controls.setPolarAngle(polarRad);
     controls.update();
@@ -82,7 +90,7 @@ export function setOrbitAngles(controls, azimuthRad, polarRad) {
   }
 
   const target = controls.target;
-  const radius = Math.max(controls.object.position.distanceTo(target), 1e-6);
+  const radius = Math.max(radiusOverride ?? controls.object.position.distanceTo(target), 1e-6);
   const sinPhiRadius = Math.sin(polarRad) * radius;
 
   controls.object.position.set(
@@ -126,6 +134,7 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
       ...interaction,
       limits: null,
       initial: profile.initial ?? null,
+      fixedDistance: profile.fixedDistance ?? null,
     };
   }
 
@@ -138,6 +147,7 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
     ...interaction,
     limits: profile.limits,
     initial: profile.initial ?? null,
+    fixedDistance: profile.fixedDistance ?? null,
   };
 }
 
@@ -147,6 +157,7 @@ export function applyInitialOrbitAngles(controls, profileState) {
     controls,
     THREE.MathUtils.degToRad(profileState.initial.azimuth),
     orbitYToPolar(profileState.initial.orbitY),
+    profileState.fixedDistance ?? undefined,
   );
 }
 

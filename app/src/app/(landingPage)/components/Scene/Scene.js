@@ -87,9 +87,10 @@ export default function Scene({
     mount.appendChild(renderer.domElement);
 
     const isModel13 = modelPath === "/assets/models/13/13-optimized.glb";
+    const isModel14 = modelPath === "/assets/models/14/14-optimized.glb";
     const isModel16 = modelPath === "/assets/models/16/16-optimized.glb";
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    const arcticEnvironment = createEnvironmentScene();
+    const arcticEnvironment = createEnvironmentScene({ invertY: isModel14 });
     const environmentMap = pmremGenerator.fromScene(arcticEnvironment.scene, 0.06).texture;
     scene.environment = environmentMap;
     scene.background = environmentMap;
@@ -200,6 +201,10 @@ export default function Scene({
             center: fittedModelCenter,
             fillRatio: getModelFillRatio(mount.clientWidth),
           });
+          if (orbitProfileState?.fixedDistance) {
+            controls.minDistance = orbitProfileState.fixedDistance;
+            controls.maxDistance = orbitProfileState.fixedDistance;
+          }
           applyInitialOrbitAngles(controls, orbitProfileState);
           initialOrbitNudge = createInitialOrbitNudge(controls, orbitProfileState, { isTouch: Boolean(isTouch) });
         }
@@ -320,12 +325,12 @@ export default function Scene({
         typo="h2"
       />
 
-      {/* <div className={styles.rotationDebug}>
+      <div className={styles.rotationDebug}>
         <span ref={rotationDebugRef} className={styles.rotationDebugText} />
         <button type="button" className={styles.rotationDebugCopy} onClick={handleCopyDebug}>
           {copied ? "Copied" : "Copy"}
         </button>
-      </div> */}
+      </div>
 
       <div ref={mountRef} className={styles.canvas} />
     </motion.div>

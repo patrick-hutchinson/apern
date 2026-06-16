@@ -122,14 +122,14 @@ const LandingPage = ({ page, selectedSectionKey, selectedView }) => {
               setView={setView}
               showHDRI={showHDRI}
             />
-            {/* <SceneControls
+            <SceneControls
               sections={page.sections}
               activeSection={activeSection}
               setActiveSection={setActiveSection}
               setView={setView}
               showHDRI={showHDRI}
               setShowHDRI={setShowHDRI}
-            /> */}
+            />
           </>
         )}
       </AnimatePresence>

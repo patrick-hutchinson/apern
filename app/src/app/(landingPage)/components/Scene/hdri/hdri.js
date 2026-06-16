@@ -1,6 +1,8 @@
 import * as THREE from "three";
 
-export function createHDRI() {
+export function createHDRI(options = {}) {
+  const { invertY = false } = options;
+  const yDirection = invertY ? -1 : 1;
   const scene = new THREE.Scene();
 
   const skyGeometry = new THREE.SphereGeometry(30, 64, 64);
@@ -11,6 +13,7 @@ export function createHDRI() {
       topColor: { value: new THREE.Color(0xb2b2b2) },
       horizonColor: { value: new THREE.Color(0x5a5a5a) },
       bottomColor: { value: new THREE.Color(0x080808) },
+      yDirection: { value: yDirection },
     },
     vertexShader: `
       varying vec3 vWorldPosition;
@@ -24,6 +27,7 @@ export function createHDRI() {
       uniform vec3 topColor;
       uniform vec3 horizonColor;
       uniform vec3 bottomColor;
+      uniform float yDirection;
       varying vec3 vWorldPosition;
       float hash(vec3 p) {
         p = fract(p * 0.3183099 + vec3(0.1));
@@ -31,7 +35,7 @@ export function createHDRI() {
         return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
       }
       void main() {
-        float h = normalize(vWorldPosition).y * 0.5 + 0.5;
+        float h = normalize(vWorldPosition).y * yDirection * 0.5 + 0.5;
         vec3 dir = normalize(vWorldPosition);
         vec3 color = mix(bottomColor, horizonColor, smoothstep(0.02, 0.5, h));
         color = mix(color, topColor, smoothstep(0.5, 1.0, h));
@@ -62,7 +66,7 @@ export function createHDRI() {
     emissiveIntensity: 0.08,
   });
   const greyIceMat = new THREE.MeshStandardMaterial({
-    color: 0xcccccc,
+    color: 0xd9d9d9,
     metalness: 0,
     roughness: 0.5,
     emissive: 0x030303,
@@ -79,13 +83,13 @@ export function createHDRI() {
     [0.0, -1.9, 2.9, 1.1],
   ];
   const greyIcePositions = [
-    [0.86, 4.25, 0.81, 1.08],
+    [0.86, 4.25, 0.81, 2.16],
     [2.1, 2.75, -0.55, 1.16],
   ];
 
   const addIceMesh = ([x, y, z, s], material) => {
     const m = new THREE.Mesh(iceGeo, material);
-    m.position.set(x, y, z);
+    m.position.set(x, y * yDirection, z);
     m.scale.setScalar(s);
     m.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
     iceCluster.add(m);
@@ -96,10 +100,14 @@ export function createHDRI() {
   scene.add(iceCluster);
 
   const envKey = new THREE.DirectionalLight(0xffffff, 4.8);
-  envKey.position.set(3, 6, 2);
+  envKey.position.set(3, 6 * yDirection, 2);
   scene.add(envKey);
 
-  const envFill = new THREE.HemisphereLight(0xbdbdbd, 0x070707, 0.95);
+  const envFill = new THREE.HemisphereLight(
+    invertY ? 0x070707 : 0xbdbdbd,
+    invertY ? 0xbdbdbd : 0x070707,
+    0.95,
+  );
   scene.add(envFill);
 
   const dispose = () => {
