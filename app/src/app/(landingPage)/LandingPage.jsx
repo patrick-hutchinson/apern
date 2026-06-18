@@ -17,7 +17,7 @@ import styles from "./LandingPage.module.css";
 
 const SECTION_MODELS = [
   { modelPath: "/assets/models/13/13-optimized.glb", thumbnailPath: "/assets/models/13/13.gif" },
-  { modelPath: "/assets/models/14/14-optimized.glb", thumbnailPath: "/assets/models/14/14.gif" },
+  { modelPath: "/assets/models/14/model.glb", thumbnailPath: "/assets/models/14/14.gif" },
   { modelPath: "/assets/models/16/16-optimized.glb", thumbnailPath: "/assets/models/16/16.gif" },
 ];
 

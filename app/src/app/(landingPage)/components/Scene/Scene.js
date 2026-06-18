@@ -87,7 +87,7 @@ export default function Scene({
     mount.appendChild(renderer.domElement);
 
     const isModel13 = modelPath === "/assets/models/13/13-optimized.glb";
-    const isModel14 = modelPath === "/assets/models/14/14-optimized.glb";
+    const isModel14 = modelPath === "/assets/models/14/model.glb";
     const isModel16 = modelPath === "/assets/models/16/16-optimized.glb";
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     const arcticEnvironment = createEnvironmentScene({ invertY: isModel14 });
@@ -134,8 +134,9 @@ export default function Scene({
       (gltf) => {
         const model = gltf.scene;
         modelRoot = model;
-        if (modelPath === "/assets/models/14/14-optimized.glb") {
-          model.rotation.x = Math.PI / 2;
+        if (modelPath === "/assets/models/14/model.glb") {
+          model.rotation.x = (3 * Math.PI) / 2;
+          model.rotation.y = Math.PI;
         }
         scene.add(model);
 
@@ -201,10 +202,6 @@ export default function Scene({
             center: fittedModelCenter,
             fillRatio: getModelFillRatio(mount.clientWidth),
           });
-          if (orbitProfileState?.fixedDistance) {
-            controls.minDistance = orbitProfileState.fixedDistance;
-            controls.maxDistance = orbitProfileState.fixedDistance;
-          }
           applyInitialOrbitAngles(controls, orbitProfileState);
           initialOrbitNudge = createInitialOrbitNudge(controls, orbitProfileState, { isTouch: Boolean(isTouch) });
         }

@@ -9,9 +9,10 @@ const MODEL_PROFILES = {
       maxOrbitY: 10.0,
     },
     initial: {
-      azimuth: -73.7,
-      orbitY: -20.0,
+      azimuth: -117.8,
+      orbitY: -9.8,
     },
+    fixedDistance: 2.0296,
   },
   "/assets/models/01/01-optimized.glb": {
     limits: {
@@ -21,18 +22,23 @@ const MODEL_PROFILES = {
       maxOrbitY: 50,
     },
   },
-  "/assets/models/14/14-optimized.glb": {
+  "/assets/models/14/model.glb": {
     limits: {
-      minAzimuth: 41.8,
-      maxAzimuth: 129.1,
-      minOrbitY: -56.4,
-      maxOrbitY: 17.8,
+      minAzimuth: 131.5,
+      maxAzimuth: -111.2,
+      minOrbitY: -11.0,
+      maxOrbitY: 74.8,
     },
     initial: {
-      azimuth: 85.45,
-      orbitY: -19.3,
+      azimuth: -164.5,
+      orbitY: 25.8,
+      target: {
+        x: -0.0506,
+        y: 0.125,
+        z: -0.0288,
+      },
     },
-    fixedDistance: 1.827,
+    fixedDistance: 1.6737,
   },
   "/assets/models/16/16-optimized.glb": {
     limits: {
@@ -112,8 +118,8 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
   const interaction = isTouch ? TOUCH_DEFAULTS : DEFAULTS;
 
   controls.enableDamping = true;
-  controls.enableZoom = false;
-  controls.enablePan = false;
+  controls.enableZoom = true;
+  controls.enablePan = true;
   controls.rotateSpeed = interaction.rotateSpeed;
   controls.dampingFactor = interaction.baseDamping;
 
@@ -153,6 +159,13 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
 
 export function applyInitialOrbitAngles(controls, profileState) {
   if (!profileState?.initial) return;
+  if (profileState.initial.target) {
+    controls.target.set(
+      profileState.initial.target.x,
+      profileState.initial.target.y,
+      profileState.initial.target.z,
+    );
+  }
   setOrbitAngles(
     controls,
     THREE.MathUtils.degToRad(profileState.initial.azimuth),
@@ -163,6 +176,7 @@ export function applyInitialOrbitAngles(controls, profileState) {
 
 export function createInitialOrbitNudge(controls, profileState, options = {}) {
   if (!profileState?.limits) return null;
+  if (profileState.limits.minAzimuth > profileState.limits.maxAzimuth) return null;
 
   const { isTouch = false } = options;
   const currentAzimuth = THREE.MathUtils.radToDeg(controls.getAzimuthalAngle());
