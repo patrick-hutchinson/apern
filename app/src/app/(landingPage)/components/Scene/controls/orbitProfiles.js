@@ -44,6 +44,16 @@ const MODEL_PROFILES = {
       },
     },
     fixedDistance: 1.9125,
+    touchInitial: {
+      azimuth: -16.7,
+      orbitY: 3.0,
+      target: {
+        x: 0.0747,
+        y: 0.0352,
+        z: -0.0984,
+      },
+    },
+    touchFixedDistance: 2.3133,
   },
   "/assets/models/16/16-optimized.glb": {
     limits: {
@@ -149,8 +159,8 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
     return {
       ...interaction,
       limits: null,
-      initial: profile.initial ?? null,
-      fixedDistance: profile.fixedDistance ?? null,
+      initial: isTouch ? profile.touchInitial ?? profile.initial ?? null : profile.initial ?? null,
+      fixedDistance: isTouch ? profile.touchFixedDistance ?? profile.fixedDistance ?? null : profile.fixedDistance ?? null,
     };
   }
 
@@ -162,8 +172,8 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
   return {
     ...interaction,
     limits: profile.limits,
-    initial: profile.initial ?? null,
-    fixedDistance: profile.fixedDistance ?? null,
+    initial: isTouch ? profile.touchInitial ?? profile.initial ?? null : profile.initial ?? null,
+    fixedDistance: isTouch ? profile.touchFixedDistance ?? profile.fixedDistance ?? null : profile.fixedDistance ?? null,
   };
 }
 
