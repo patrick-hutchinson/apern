@@ -18,6 +18,16 @@ const MODEL_PROFILES = {
       },
     },
     fixedDistance: 2.0296,
+    touchInitial: {
+      azimuth: -89.6,
+      orbitY: -6.5,
+      target: {
+        x: -0.0015,
+        y: -0.0453,
+        z: -0.0089,
+      },
+    },
+    touchFixedDistance: 2.7455,
   },
   "/assets/models/01/01-optimized.glb": {
     limits: {
@@ -72,6 +82,16 @@ const MODEL_PROFILES = {
       },
     },
     fixedDistance: 2.0726,
+    touchInitial: {
+      azimuth: -2.7,
+      orbitY: 8.3,
+      target: {
+        x: 0.0186,
+        y: -0.1075,
+        z: -0.0131,
+      },
+    },
+    touchFixedDistance: 2.3731,
   },
 };
 
