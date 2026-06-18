@@ -88,7 +88,7 @@ export default function Scene({
     mount.appendChild(renderer.domElement);
 
     const isModel13 = modelPath === "/assets/models/13/13-optimized.glb";
-    const isModel14 = modelPath === "/assets/models/14/model-new.glb";
+    const isModel14 = modelPath === "/assets/models/14/14.glb";
     const isModel16 = modelPath === "/assets/models/16/16-optimized.glb";
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     const arcticEnvironment = createEnvironmentScene({
@@ -139,7 +139,7 @@ export default function Scene({
       (gltf) => {
         const model = gltf.scene;
         modelRoot = model;
-        if (modelPath === "/assets/models/14/model-new.glb") {
+        if (modelPath === "/assets/models/14/14.glb") {
           model.rotation.x = (3 * Math.PI) / 2;
           model.rotation.y = Math.PI;
         }

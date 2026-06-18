@@ -37,7 +37,7 @@ const MODEL_PROFILES = {
       maxOrbitY: 50,
     },
   },
-  "/assets/models/14/model-new.glb": {
+  "/assets/models/14/14.glb": {
     limits: {
       minAzimuth: -54.9,
       maxAzimuth: 59.2,
@@ -179,8 +179,10 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
     return {
       ...interaction,
       limits: null,
-      initial: isTouch ? profile.touchInitial ?? profile.initial ?? null : profile.initial ?? null,
-      fixedDistance: isTouch ? profile.touchFixedDistance ?? profile.fixedDistance ?? null : profile.fixedDistance ?? null,
+      initial: isTouch ? (profile.touchInitial ?? profile.initial ?? null) : (profile.initial ?? null),
+      fixedDistance: isTouch
+        ? (profile.touchFixedDistance ?? profile.fixedDistance ?? null)
+        : (profile.fixedDistance ?? null),
     };
   }
 
@@ -192,8 +194,8 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
   return {
     ...interaction,
     limits: profile.limits,
-    initial: isTouch ? profile.touchInitial ?? profile.initial ?? null : profile.initial ?? null,
-    fixedDistance: isTouch ? profile.touchFixedDistance ?? profile.fixedDistance ?? null : profile.fixedDistance ?? null,
+    initial: isTouch ? (profile.touchInitial ?? profile.initial ?? null) : (profile.initial ?? null),
+    fixedDistance: isTouch ? (profile.touchFixedDistance ?? profile.fixedDistance ?? null) : (profile.fixedDistance ?? null),
   };
 }
 
