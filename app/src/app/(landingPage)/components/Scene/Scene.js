@@ -31,6 +31,7 @@ export default function Scene({
   modelPath,
   setView,
   showHDRI = false,
+  showDebugUi = false,
 }) {
   const { isTouch } = useContext(DeviceContext);
   const [status, setStatus] = useState("Loading...");
@@ -244,7 +245,7 @@ export default function Scene({
       updateOrbitEdgeSmoothing(controls, orbitProfileState);
       initialOrbitNudge = updateInitialOrbitNudge(controls, initialOrbitNudge, performance.now()) ? initialOrbitNudge : null;
 
-      if (rotationDebugRef.current) {
+      if (showDebugUi && rotationDebugRef.current) {
         const azimuthDeg = THREE.MathUtils.radToDeg(controls.getAzimuthalAngle());
         const polarDeg = THREE.MathUtils.radToDeg(controls.getPolarAngle() - Math.PI / 2);
         const modelRotX = modelRoot ? THREE.MathUtils.radToDeg(modelRoot.rotation.x) : 0;
@@ -326,12 +327,14 @@ export default function Scene({
         typo="h2"
       />
 
-      <div className={styles.rotationDebug}>
-        <span ref={rotationDebugRef} className={styles.rotationDebugText} />
-        <button type="button" className={styles.rotationDebugCopy} onClick={handleCopyDebug}>
-          {copied ? "Copied" : "Copy"}
-        </button>
-      </div>
+      {showDebugUi ? (
+        <div className={styles.rotationDebug}>
+          <span ref={rotationDebugRef} className={styles.rotationDebugText} />
+          <button type="button" className={styles.rotationDebugCopy} onClick={handleCopyDebug}>
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+      ) : null}
 
       <div ref={mountRef} className={styles.canvas} />
     </motion.div>

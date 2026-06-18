@@ -25,6 +25,7 @@ const LandingPage = ({ page, selectedSectionKey, selectedView }) => {
   const [view, setView] = useState(selectedView === "text" ? "text" : "model");
   const [activeSection, setActiveSection] = useState();
   const [showHDRI, setShowHDRI] = useState(false);
+  const [showLocalSceneUi, setShowLocalSceneUi] = useState(false);
 
   const activeSectionIndex = page?.sections?.findIndex(
     (section) =>
@@ -66,6 +67,11 @@ const LandingPage = ({ page, selectedSectionKey, selectedView }) => {
     if (!activeSectionKey) return;
     window.sessionStorage.setItem("lastSection", activeSectionKey);
   }, [activeSection]);
+
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    setShowLocalSceneUi(hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1");
+  }, []);
 
   if (!activeSection) return null;
 
@@ -121,15 +127,18 @@ const LandingPage = ({ page, selectedSectionKey, selectedView }) => {
               modelPath={activeModel.modelPath}
               setView={setView}
               showHDRI={showHDRI}
+              showDebugUi={showLocalSceneUi}
             />
-            <SceneControls
-              sections={page.sections}
-              activeSection={activeSection}
-              setActiveSection={setActiveSection}
-              setView={setView}
-              showHDRI={showHDRI}
-              setShowHDRI={setShowHDRI}
-            />
+            {showLocalSceneUi ? (
+              <SceneControls
+                sections={page.sections}
+                activeSection={activeSection}
+                setActiveSection={setActiveSection}
+                setView={setView}
+                showHDRI={showHDRI}
+                setShowHDRI={setShowHDRI}
+              />
+            ) : null}
           </>
         )}
       </AnimatePresence>
