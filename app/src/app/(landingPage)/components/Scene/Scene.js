@@ -87,10 +87,14 @@ export default function Scene({
     mount.appendChild(renderer.domElement);
 
     const isModel13 = modelPath === "/assets/models/13/13-optimized.glb";
-    const isModel14 = modelPath === "/assets/models/14/model.glb";
+    const isModel14 = modelPath === "/assets/models/14/model-new.glb";
     const isModel16 = modelPath === "/assets/models/16/16-optimized.glb";
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    const arcticEnvironment = createEnvironmentScene({ invertY: isModel14 });
+    const arcticEnvironment = createEnvironmentScene({
+      invertY: isModel14,
+      rotateXDeg: isModel14 ? 90 : 0,
+      rotateYDeg: isModel14 ? 90 : 0,
+    });
     const environmentMap = pmremGenerator.fromScene(arcticEnvironment.scene, 0.06).texture;
     scene.environment = environmentMap;
     scene.background = environmentMap;
@@ -134,7 +138,7 @@ export default function Scene({
       (gltf) => {
         const model = gltf.scene;
         modelRoot = model;
-        if (modelPath === "/assets/models/14/model.glb") {
+        if (modelPath === "/assets/models/14/model-new.glb") {
           model.rotation.x = (3 * Math.PI) / 2;
           model.rotation.y = Math.PI;
         }

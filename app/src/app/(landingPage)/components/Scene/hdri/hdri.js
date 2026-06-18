@@ -1,9 +1,13 @@
 import * as THREE from "three";
 
 export function createHDRI(options = {}) {
-  const { invertY = false } = options;
+  const { invertY = false, rotateXDeg = 0, rotateYDeg = 0 } = options;
   const yDirection = invertY ? -1 : 1;
   const scene = new THREE.Scene();
+  const environmentRoot = new THREE.Group();
+  environmentRoot.rotation.x = THREE.MathUtils.degToRad(rotateXDeg);
+  environmentRoot.rotation.y = THREE.MathUtils.degToRad(rotateYDeg);
+  scene.add(environmentRoot);
 
   const skyGeometry = new THREE.SphereGeometry(30, 64, 64);
   const skyMaterial = new THREE.ShaderMaterial({
@@ -55,7 +59,7 @@ export function createHDRI(options = {}) {
   });
 
   const sky = new THREE.Mesh(skyGeometry, skyMaterial);
-  scene.add(sky);
+  environmentRoot.add(sky);
 
   const iceGeo = new THREE.IcosahedronGeometry(1, 1);
   const iceMat = new THREE.MeshStandardMaterial({
@@ -97,11 +101,11 @@ export function createHDRI(options = {}) {
 
   icePositions.forEach((position) => addIceMesh(position, iceMat));
   greyIcePositions.forEach((position) => addIceMesh(position, greyIceMat));
-  scene.add(iceCluster);
+  environmentRoot.add(iceCluster);
 
   const envKey = new THREE.DirectionalLight(0xffffff, 4.8);
   envKey.position.set(3, 6 * yDirection, 2);
-  scene.add(envKey);
+  environmentRoot.add(envKey);
 
   const envFill = new THREE.HemisphereLight(
     invertY ? 0x070707 : 0xbdbdbd,

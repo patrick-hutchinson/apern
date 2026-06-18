@@ -9,8 +9,13 @@ const MODEL_PROFILES = {
       maxOrbitY: 10.0,
     },
     initial: {
-      azimuth: -117.8,
-      orbitY: -9.8,
+      azimuth: -94.6,
+      orbitY: -6.5,
+      target: {
+        x: -0.0015,
+        y: -0.0453,
+        z: -0.0089,
+      },
     },
     fixedDistance: 2.0296,
   },
@@ -22,23 +27,23 @@ const MODEL_PROFILES = {
       maxOrbitY: 50,
     },
   },
-  "/assets/models/14/model.glb": {
+  "/assets/models/14/model-new.glb": {
     limits: {
-      minAzimuth: 131.5,
-      maxAzimuth: -111.2,
-      minOrbitY: -11.0,
-      maxOrbitY: 74.8,
+      minAzimuth: -54.9,
+      maxAzimuth: 59.2,
+      minOrbitY: -43.7,
+      maxOrbitY: 44.7,
     },
     initial: {
-      azimuth: -164.5,
-      orbitY: 25.8,
+      azimuth: 10.6,
+      orbitY: -9.2,
       target: {
-        x: -0.0506,
-        y: 0.125,
-        z: -0.0288,
+        x: 0.1119,
+        y: 0.0442,
+        z: -0.1061,
       },
     },
-    fixedDistance: 1.6737,
+    fixedDistance: 1.9125,
   },
   "/assets/models/16/16-optimized.glb": {
     limits: {
@@ -48,10 +53,15 @@ const MODEL_PROFILES = {
       maxOrbitY: 51.3,
     },
     initial: {
-      azimuth: -22.3,
-      orbitY: 8.25,
+      azimuth: -8.1,
+      orbitY: 8.3,
+      target: {
+        x: 0.0186,
+        y: -0.1075,
+        z: -0.0131,
+      },
     },
-    fixedDistance: 2.319,
+    fixedDistance: 2.0726,
   },
 };
 
@@ -160,11 +170,7 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
 export function applyInitialOrbitAngles(controls, profileState) {
   if (!profileState?.initial) return;
   if (profileState.initial.target) {
-    controls.target.set(
-      profileState.initial.target.x,
-      profileState.initial.target.y,
-      profileState.initial.target.z,
-    );
+    controls.target.set(profileState.initial.target.x, profileState.initial.target.y, profileState.initial.target.z);
   }
   setOrbitAngles(
     controls,
