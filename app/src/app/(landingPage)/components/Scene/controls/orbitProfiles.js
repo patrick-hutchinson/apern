@@ -9,15 +9,15 @@ const MODEL_PROFILES = {
       maxOrbitY: 10.0,
     },
     initial: {
-      azimuth: -94.6,
-      orbitY: -6.5,
+      azimuth: -85.3,
+      orbitY: -6.6,
       target: {
         x: -0.0015,
         y: -0.0453,
         z: -0.0089,
       },
     },
-    fixedDistance: 2.0296,
+    fixedDistance: 1.6396,
     touchInitial: {
       azimuth: -89.6,
       orbitY: -6.5,
@@ -45,15 +45,15 @@ const MODEL_PROFILES = {
       maxOrbitY: 44.7,
     },
     initial: {
-      azimuth: 10.6,
-      orbitY: -9.2,
+      azimuth: -16.1,
+      orbitY: -6.5,
       target: {
         x: 0.1119,
         y: 0.0442,
         z: -0.1061,
       },
     },
-    fixedDistance: 1.9125,
+    fixedDistance: 1.6147,
     touchInitial: {
       azimuth: -16.7,
       orbitY: 3.0,
@@ -73,7 +73,7 @@ const MODEL_PROFILES = {
       maxOrbitY: 51.3,
     },
     initial: {
-      azimuth: -8.1,
+      azimuth: 6.1,
       orbitY: 8.3,
       target: {
         x: 0.0186,
@@ -81,7 +81,7 @@ const MODEL_PROFILES = {
         z: -0.0131,
       },
     },
-    fixedDistance: 2.0726,
+    fixedDistance: 1.6539,
     touchInitial: {
       azimuth: -2.7,
       orbitY: 8.3,
