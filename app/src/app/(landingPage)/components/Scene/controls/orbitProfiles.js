@@ -27,7 +27,7 @@ const MODEL_PROFILES = {
         z: -0.0089,
       },
     },
-    touchFixedDistance: 2.7455,
+    touchFixedDistance: 2.1964,
   },
   "/assets/models/01/01-optimized.glb": {
     limits: {
