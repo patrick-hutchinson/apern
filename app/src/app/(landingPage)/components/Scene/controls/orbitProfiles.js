@@ -158,7 +158,7 @@ export function applyOrbitControlsProfile(controls, modelPath, options = {}) {
   const interaction = isTouch ? TOUCH_DEFAULTS : DEFAULTS;
 
   controls.enableDamping = true;
-  controls.enableZoom = true;
+  controls.enableZoom = false;
   controls.enablePan = true;
   controls.rotateSpeed = interaction.rotateSpeed;
   controls.dampingFactor = interaction.baseDamping;
